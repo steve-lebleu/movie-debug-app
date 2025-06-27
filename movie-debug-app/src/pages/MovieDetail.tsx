@@ -9,6 +9,8 @@ import {
   Link as MuiLink,
   CardMedia,
   IconButton,
+  Stack,
+  Button,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -108,7 +110,9 @@ export default function MovieDetail() {
 
       <Box sx={{ mt: 4 }}>
         <MuiLink component={Link} to="/" color="primary" underline="hover">
-          Retour à l'accueil
+          <Stack spacing={2} direction="row">
+            <Button variant="text">Retour à l'accueil</Button>
+          </Stack>
         </MuiLink>
       </Box>
     </Container>

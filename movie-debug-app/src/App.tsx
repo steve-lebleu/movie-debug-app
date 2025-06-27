@@ -51,7 +51,7 @@ function App() {
             </IconButton>
           </Box>
           <MuiLink component={Link} to="/favorites" color="inherit" underline="hover" sx={{ ml: 2 }}>
-            Mes Favoris
+            Ma liste
           </MuiLink>
         </Toolbar>
       </AppBar>
