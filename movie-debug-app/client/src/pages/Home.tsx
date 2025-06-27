@@ -47,7 +47,7 @@ export default function Home() {
 
         const data = await response.json();
         setMovies(data.results || []);
-        setTotalPages(data.total_pages);
+        setTotalPages(data.total_pages || 1);
       } catch (err) {
         console.error("Erreur de chargement des films :", err);
         setError("Une erreur est survenue lors du chargement des films.");
@@ -58,6 +58,10 @@ export default function Home() {
 
     fetchPopularMovies();
   }, [page]);
+
+  const goToPage = (p: number) => {
+    if (p >= 1 && p <= totalPages) setPage(p);
+  };
 
   if (loading) return <CircularProgress sx={{ mt: 4, display: 'block', mx: 'auto' }} />;
 
@@ -76,29 +80,32 @@ export default function Home() {
       </Typography>
 
       <Grid container spacing={4}>
-  {movies.map((movie) => (
-    <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
-      <MovieCard movie={movie} />
-    </Grid>
-  ))}
-</Grid>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 2 }}>
-        <Button
-          variant="outlined"
-          onClick={() => setPage((prev) => prev - 1)}
-          disabled={page === 1}
-        >
-          Précédent
+        {movies.map((movie) => (
+          <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
+            <MovieCard movie={movie} />
+          </Grid>
+        ))}
+      </Grid>
+
+      <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', mt: 4, gap: 1 }}>
+        <Button onClick={() => goToPage(page - 1)} disabled={page === 1}>
+          ◀ Précédent
         </Button>
-        <Typography variant="body1" color="text.secondary">
-          Page {page}
-        </Typography>
-        <Button
-          variant="outlined"
-          onClick={() => setPage((prev) => prev + 1)}
-          disabled={page === totalPages}
-        >
-          Suivant
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+          .slice(Math.max(0, page - 3), Math.min(totalPages, page + 2))
+          .map((p) => (
+            <Button
+              key={p}
+              variant={p === page ? "contained" : "outlined"}
+              onClick={() => goToPage(p)}
+            >
+              {p}
+            </Button>
+          ))}
+
+        <Button onClick={() => goToPage(page + 1)} disabled={page === totalPages}>
+          Suivant ▶
         </Button>
       </Box>
     </Container>
