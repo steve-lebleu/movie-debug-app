@@ -16,7 +16,7 @@ function App() {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <MuiLink component={Link} to="/" color="inherit" underline="none">
@@ -48,9 +48,11 @@ function App() {
       </AppBar>
       <Container maxWidth="lg">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home searchTerm={searchTerm} />} />
           <Route path="/movie/:id" element={<MovieDetail />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="*" element={<Typography variant="h6" color="error">Oups ! Vous vous êtes égaré...</Typography>} />
+
         </Routes>
       </Container>
     </>
