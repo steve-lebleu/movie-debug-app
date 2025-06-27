@@ -69,7 +69,7 @@ export default function Home({ searchTerm }: { searchTerm: string }) {
         <Alert severity="info">Aucun film trouvé.</Alert>
       ) : (
         <>
-          <Grid container spacing={4}>
+          <Grid container spacing={4} sx={{justifyContent: 'center'}}>
             {movies.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
