@@ -1,7 +1,10 @@
 import { Container, Typography, Box, Link as MuiLink } from "@mui/material";
 import { Link } from "react-router-dom";
 
+
 export default function Favorites() {
+
+  
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
