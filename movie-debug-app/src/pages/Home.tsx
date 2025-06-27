@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
-
-import { CircularProgress, Container, Grid, Typography, Alert, Box } from "@mui/material";
+import {
+  CircularProgress,
+  Container,
+  Grid,
+  Typography,
+  Alert,
+  Box,
+  Pagination,
+} from "@mui/material";
 
 import { MovieCard } from "../ui/components/MovieCard";
 
@@ -22,16 +29,17 @@ export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchPopularMovies = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
-        // Parse the JSON response
-        
+        const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`);
         const data = await response.json();
         setMovies(data.results);
+        setTotalPages(data.total_pages);
       } catch (err) {
         setError('Erreur lors du chargement des films: ' + (err as Error).message);
         console.error(err);
@@ -40,11 +48,11 @@ export default function Home() {
       }
     };
     fetchPopularMovies();
-  }, []);
+  }, [page]);
 
   if (loading) return <CircularProgress sx={{ mt: 4 }} />;
   if (error) return <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>;
-  
+
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -56,9 +64,12 @@ export default function Home() {
         ))}
       </Grid>
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <Typography variant="body1" color="text.secondary">
-          (Placeholder: Pagination)
-        </Typography>
+        <Pagination
+          count={Math.min(totalPages, 500)}
+          page={page}
+          onChange={(_e, value) => setPage(value)}
+          color="primary"
+        />
       </Box>
     </Container>
   );
