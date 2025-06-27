@@ -5,8 +5,7 @@ import {
   Grid,
   Typography,
   Alert,
-  Box,
-  Button
+  Box
 } from "@mui/material";
 import { MovieCard } from "../ui/components/MovieCard";
 
@@ -76,7 +75,7 @@ export default function Home() {
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Films Populaires – Page {page}
+        Films – Page {page}
       </Typography>
 
       <Grid container spacing={4}>
@@ -87,26 +86,66 @@ export default function Home() {
         ))}
       </Grid>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', mt: 4, gap: 1 }}>
-        <Button onClick={() => goToPage(page - 1)} disabled={page === 1}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          gap: 1,
+          mt: 4
+        }}
+      >
+        <button
+          onClick={() => goToPage(page - 1)}
+          disabled={page === 1}
+          style={{
+            backgroundColor: '#000',
+            color: '#fff',
+            border: 'none',
+            padding: '6px 12px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            opacity: page === 1 ? 0.5 : 1,
+          }}
+        >
           ◀ Précédent
-        </Button>
+        </button>
 
         {Array.from({ length: totalPages }, (_, i) => i + 1)
           .slice(Math.max(0, page - 3), Math.min(totalPages, page + 2))
-          .map((p) => (
-            <Button
-              key={p}
-              variant={p === page ? "contained" : "outlined"}
-              onClick={() => goToPage(p)}
+          .map((num) => (
+            <button
+              key={num}
+              onClick={() => goToPage(num)}
+              style={{
+                backgroundColor: num === page ? '#e50914' : '#000',
+                color: '#fff',
+                fontWeight: 'bold',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
             >
-              {p}
-            </Button>
+              {num}
+            </button>
           ))}
 
-        <Button onClick={() => goToPage(page + 1)} disabled={page === totalPages}>
+        <button
+          onClick={() => goToPage(page + 1)}
+          disabled={page === totalPages}
+          style={{
+            backgroundColor: '#000',
+            color: '#fff',
+            border: 'none',
+            padding: '6px 12px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            opacity: page === totalPages ? 0.5 : 1,
+          }}
+        >
           Suivant ▶
-        </Button>
+        </button>
       </Box>
     </Container>
   );

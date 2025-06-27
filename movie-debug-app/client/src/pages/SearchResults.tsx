@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import "./SearchResults.css";
+import './SearchResults.css';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -12,6 +12,7 @@ function SearchResults() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
 
   useEffect(() => {
     const fetchSearch = async () => {
@@ -24,8 +25,9 @@ function SearchResults() {
         const data = await res.json();
         setResults(data.results || []);
         setTotalPages(data.total_pages || 1);
+        setTotalResults(data.total_results || 0);
       } catch (err) {
-        console.error("Erreur lors de la recherche :", err);
+        console.error('Erreur lors de la recherche :', err);
       } finally {
         setLoading(false);
       }
@@ -43,8 +45,16 @@ function SearchResults() {
   };
 
   return (
-    <div>
-      <h2>Résultats pour : {query}</h2>
+    <div style={{ padding: '20px' }}>
+      <h2 style={{ marginBottom: '10px' }}>
+        Résultats pour : <span style={{ color: '#e50914' }}>{query}</span>
+      </h2>
+
+      {!loading && totalResults > 0 && (
+        <p style={{ marginBottom: '20px', fontStyle: 'italic' }}>
+          {totalResults} résultat{totalResults > 1 ? 's' : ''} trouvé{totalResults > 1 ? 's' : ''}
+        </p>
+      )}
 
       {loading ? (
         <p>Chargement...</p>
@@ -52,10 +62,14 @@ function SearchResults() {
         <>
           <div className="card-grid">
             {results.map((movie) => (
-              <div key={movie.id} className='container-card'>
+              <div key={movie.id} className="container-card">
                 <img
-                  className='container'
-                  src={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : ''}
+                  className="container"
+                  src={
+                    movie.poster_path
+                      ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+                      : 'https://via.placeholder.com/200x300?text=No+Image'
+                  }
                   alt={movie.title}
                 />
                 <p>{movie.title}</p>
@@ -63,29 +77,67 @@ function SearchResults() {
             ))}
           </div>
 
-          {/* Pagination complète */}
-          <div style={{ marginTop: "30px", textAlign: "center" }}>
-            <button disabled={page === 1} onClick={() => handlePageClick(page - 1)}>
-              Précédent
+          {/* Pagination */}
+          <div
+            style={{
+              marginTop: '30px',
+              textAlign: 'center',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '8px',
+              justifyContent: 'center',
+            }}
+          >
+            <button
+              onClick={() => handlePageClick(page - 1)}
+              disabled={page === 1}
+              style={{
+                backgroundColor: '#000',
+                color: '#fff',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                opacity: page === 1 ? 0.5 : 1,
+              }}
+            >
+              ◀ Précédent
             </button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .slice(Math.max(0, page - 3), Math.min(page + 2, totalPages))
+              .slice(Math.max(0, page - 3), Math.min(totalPages, page + 2))
               .map((num) => (
                 <button
                   key={num}
                   onClick={() => handlePageClick(num)}
                   style={{
-                    fontWeight: num === page ? 'bold' : 'normal',
-                    margin: '0 5px'
+                    backgroundColor: num === page ? '#e50914' : '#000',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
                   }}
                 >
                   {num}
                 </button>
               ))}
 
-            <button disabled={page === totalPages} onClick={() => handlePageClick(page + 1)}>
-              Suivant
+            <button
+              onClick={() => handlePageClick(page + 1)}
+              disabled={page === totalPages}
+              style={{
+                backgroundColor: '#000',
+                color: '#fff',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                opacity: page === totalPages ? 0.5 : 1,
+              }}
+            >
+              Suivant ▶
             </button>
           </div>
         </>
