@@ -43,7 +43,7 @@ export function MovieCard({ movie }: { movie: Movie }) {
       />
 
       {/* Icône Favoris */}
-      <Box sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}>
+      <Box sx={{ position: 'absolute', bottom: 15, right: 8, zIndex: 1 }}>
         <IconButton onClick={handleToggleFavorite} color="error">
           {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </IconButton>
