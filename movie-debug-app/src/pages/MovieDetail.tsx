@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { CircularProgress, Container, Alert, Box, Typography, Link as MuiLink, CardMedia } from "@mui/material";
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 type Movie = {
@@ -33,7 +34,7 @@ export default function MovieDetail() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`${URL}/film/${id}?api_key=${API_KEY}`);
+        const response = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}`);
 
         if (!response.ok) {
           const errorData = await response.json();

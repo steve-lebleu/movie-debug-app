@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-
 import { CircularProgress, Container, Grid, Typography, Alert, Box } from "@mui/material";
-
 import { MovieCard } from "../ui/components/MovieCard";
 
-const BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 type Movie = {
   id: number;
@@ -27,10 +25,19 @@ export default function Home() {
     const fetchPopularMovies = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${BASE_URL}/film/populaires?api_key=${API_KEY}`);
+        const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
+
         
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
         const data = await response.json();
-        setMovies(data);
+        console.log('Données reçues:', data);
+
+
+        const filmsList = data.results ? data.results : [];
+        setMovies(filmsList);
       } catch (err) {
         setError('Erreur lors du chargement des films: ' + (err as Error).message);
         console.error(err);
@@ -43,7 +50,7 @@ export default function Home() {
 
   if (loading) return <CircularProgress sx={{ mt: 4 }} />;
   if (error) return <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>;
-  
+
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
