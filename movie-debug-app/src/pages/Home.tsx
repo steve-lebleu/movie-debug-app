@@ -27,10 +27,11 @@ export default function Home() {
     const fetchPopularMovies = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${BASE_URL}/film/populaires?api_key=${API_KEY}`);
+        const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
+        // Parse the JSON response
         
         const data = await response.json();
-        setMovies(data);
+        setMovies(data.results);
       } catch (err) {
         setError('Erreur lors du chargement des films: ' + (err as Error).message);
         console.error(err);
