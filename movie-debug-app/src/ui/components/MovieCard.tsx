@@ -30,7 +30,7 @@ export function MovieCard({ movie }: { movie: Movie }) {
   };
 
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: 8,   borderRadius: 8}}>
       {/* Image du film */}
       <CardMedia
         component="img"
