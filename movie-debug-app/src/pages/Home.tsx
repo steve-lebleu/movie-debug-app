@@ -29,6 +29,7 @@ export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Const pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -65,7 +66,8 @@ export default function Home() {
       </Grid>
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <Pagination
-          count={Math.min(totalPages, 500)}
+        // Limite de la pagination à 100 pages max
+          count={Math.min(totalPages, 100)}
           page={page}
           onChange={(_e, value) => setPage(value)}
           color="primary"
