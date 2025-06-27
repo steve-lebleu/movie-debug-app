@@ -15,7 +15,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import Home from './pages/Home';
 import MovieDetail from './pages/MovieDetail';
 import Favorites from './pages/Favorites';
-import SearchResults from './pages/SearchResults'; // 👈 à créer
+import SearchResults from './pages/SearchResults'; 
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,10 +32,10 @@ function App() {
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <MuiLink component={Link} to="/" color="inherit" underline="none">
-              Movie-Debug
+          MOVIE
             </MuiLink>
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }}>
             <TextField
               variant="outlined"
               size="small"

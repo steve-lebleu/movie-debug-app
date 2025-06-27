@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { CircularProgress, Container, Alert, Box, Typography, Link as MuiLink, CardMedia } from "@mui/material";
 
-
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 type Movie = {
@@ -29,31 +29,30 @@ export default function MovieDetail() {
       return;
     }
 
-    const fetchMovie = async () => {
+const fetchMovie = async () => {
   try {
     setLoading(true);
     setError(null);
 
-    const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${import.meta.env.VITE_TMDB_API_KEY}`);
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`);
 
     if (!response.ok) {
-      // Essayons de lire le message d'erreur si possible
       let errorMessage = `Erreur HTTP ${response.status}`;
       try {
         const errorData = await response.json();
         errorMessage = errorData.status_message || errorMessage;
       } catch (_) {
-        // ignore si ce n'est pas du JSON
+        // ignore JSON parsing error
       }
-      throw new Error(errorMessage);
+      console.error("Détail technique :", errorMessage); // 👈 visible en console
+      throw new Error("Impossible de charger les informations du film.");
     }
 
     const data = await response.json();
     setMovie(data);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Erreur inconnue';
-    setError(`Erreur lors du chargement des détails du film : ${message}`);
-    console.error('Erreur de chargement :', err);
+    console.error('Erreur de chargement (détail dev) :', err); // 👈 log complet
+    setError("Une erreur est survenue lors du chargement du film. Veuillez réessayer.");
   } finally {
     setLoading(false);
   }

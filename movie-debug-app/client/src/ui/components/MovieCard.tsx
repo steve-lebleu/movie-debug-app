@@ -14,7 +14,7 @@ export function MovieCard({ movie }: { movie: Movie }) {
   const imageUrl = `${IMAGE_BASE_URL}${movie.poster_path}`;
   
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+<Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <CardMedia
         component="img"
         sx={{

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-
+import "./SearchResults.css";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -37,8 +37,8 @@ function SearchResults() {
       ) : (
         results.length > 0 ? (
           results.map((movie) => (
-            <div key={movie.id}>
-              <img
+            <div key={movie.id} className='container-card'>
+              <img className='container'
                 src={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : ''}
                 alt={movie.title}
               />

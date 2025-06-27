@@ -8,7 +8,6 @@ import {
   Box,
   Button
 } from "@mui/material";
-
 import { MovieCard } from "../ui/components/MovieCard";
 
 type Movie = {
@@ -22,12 +21,15 @@ type Movie = {
   vote_count: number;
 };
 
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const BASE_URL = "https://api.themoviedb.org/3";
+
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1); // 👈 page actuelle
-  const [totalPages, setTotalPages] = useState(1); // 👈 total de pages (si tu veux le gérer)
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchPopularMovies = async () => {
@@ -35,23 +37,20 @@ export default function Home() {
         setLoading(true);
         setError(null);
 
-        const apiKey = import.meta.env.VITE_TMDB_API_KEY;
         const response = await fetch(
-          `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&page=${page}`
+          `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`
         );
 
         if (!response.ok) {
-          throw new Error(`Erreur HTTP ${response.status}`);
+          throw new Error("Impossible de charger les films.");
         }
 
         const data = await response.json();
         setMovies(data.results || []);
-        setTotalPages(data.total_pages); // utile pour désactiver le bouton "Suivant"
+        setTotalPages(data.total_pages);
       } catch (err) {
-        setError(
-          "Erreur lors du chargement des films: " + (err as Error).message
-        );
-        console.error(err);
+        console.error("Erreur de chargement des films :", err);
+        setError("Une erreur est survenue lors du chargement des films.");
       } finally {
         setLoading(false);
       }
@@ -60,31 +59,34 @@ export default function Home() {
     fetchPopularMovies();
   }, [page]);
 
-  if (loading) return <CircularProgress sx={{ mt: 4 }} />;
-  if (error)
+  if (loading) return <CircularProgress sx={{ mt: 4, display: 'block', mx: 'auto' }} />;
+
+  if (error) {
     return (
       <Alert severity="error" sx={{ mt: 4 }}>
         {error}
       </Alert>
     );
+  }
 
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Films Populaires – Page {page}
       </Typography>
-      <Grid container spacing={4}>
-        {movies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} />
-        ))}
-      </Grid>
 
-      {/* PAGINATION */}
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 4, gap: 2 }}>
+      <Grid container spacing={4}>
+  {movies.map((movie) => (
+    <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
+      <MovieCard movie={movie} />
+    </Grid>
+  ))}
+</Grid>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 2 }}>
         <Button
           variant="outlined"
-          disabled={page === 1}
           onClick={() => setPage((prev) => prev - 1)}
+          disabled={page === 1}
         >
           Précédent
         </Button>
@@ -93,8 +95,8 @@ export default function Home() {
         </Typography>
         <Button
           variant="outlined"
-          disabled={page === totalPages}
           onClick={() => setPage((prev) => prev + 1)}
+          disabled={page === totalPages}
         >
           Suivant
         </Button>
