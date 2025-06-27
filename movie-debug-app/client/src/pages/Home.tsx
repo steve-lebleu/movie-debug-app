@@ -1,0 +1,152 @@
+import { useEffect, useState } from "react";
+import {
+  CircularProgress,
+  Container,
+  Grid,
+  Typography,
+  Alert,
+  Box
+} from "@mui/material";
+import { MovieCard } from "../ui/components/MovieCard";
+
+type Movie = {
+  id: number;
+  title: string;
+  poster_path: string;
+  tagline: string;
+  overview: string;
+  release_date: string;
+  vote_average: number;
+  vote_count: number;
+};
+
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const BASE_URL = "https://api.themoviedb.org/3";
+
+export default function Home() {
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    const fetchPopularMovies = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch(
+          `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Impossible de charger les films.");
+        }
+
+        const data = await response.json();
+        setMovies(data.results || []);
+        setTotalPages(data.total_pages || 1);
+      } catch (err) {
+        console.error("Erreur de chargement des films :", err);
+        setError("Une erreur est survenue lors du chargement des films.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPopularMovies();
+  }, [page]);
+
+  const goToPage = (p: number) => {
+    if (p >= 1 && p <= totalPages) setPage(p);
+  };
+
+  if (loading) return <CircularProgress sx={{ mt: 4, display: 'block', mx: 'auto' }} />;
+
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ mt: 4 }}>
+        {error}
+      </Alert>
+    );
+  }
+
+  return (
+    <Container sx={{ py: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Films – Page {page}
+      </Typography>
+
+      <Grid container spacing={4}>
+        {movies.map((movie) => (
+          <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
+            <MovieCard movie={movie} />
+          </Grid>
+        ))}
+      </Grid>
+
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          gap: 1,
+          mt: 4
+        }}
+      >
+        <button
+          onClick={() => goToPage(page - 1)}
+          disabled={page === 1}
+          style={{
+            backgroundColor: '#000',
+            color: '#fff',
+            border: 'none',
+            padding: '6px 12px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            opacity: page === 1 ? 0.5 : 1,
+          }}
+        >
+          ◀ Précédent
+        </button>
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+          .slice(Math.max(0, page - 3), Math.min(totalPages, page + 2))
+          .map((num) => (
+            <button
+              key={num}
+              onClick={() => goToPage(num)}
+              style={{
+                backgroundColor: num === page ? '#e50914' : '#000',
+                color: '#fff',
+                fontWeight: 'bold',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              {num}
+            </button>
+          ))}
+
+        <button
+          onClick={() => goToPage(page + 1)}
+          disabled={page === totalPages}
+          style={{
+            backgroundColor: '#000',
+            color: '#fff',
+            border: 'none',
+            padding: '6px 12px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            opacity: page === totalPages ? 0.5 : 1,
+          }}
+        >
+          Suivant ▶
+        </button>
+      </Box>
+    </Container>
+  );
+}

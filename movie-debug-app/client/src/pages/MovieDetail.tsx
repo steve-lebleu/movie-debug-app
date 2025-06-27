@@ -29,26 +29,35 @@ export default function MovieDetail() {
       return;
     }
 
-    const fetchMovie = async () => {
+const fetchMovie = async () => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`);
+
+    if (!response.ok) {
+      let errorMessage = `Erreur HTTP ${response.status}`;
       try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch(`${URL}/film/${id}?api_key=${API_KEY}`);
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.status_message || `HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setMovie(data);
-      } catch (err) {
-        setError('Erreur lors du chargement des détails du film: ' + (err as Error).message);
-        console.error(err);
-      } finally {
-        setLoading(false);
+        const errorData = await response.json();
+        errorMessage = errorData.status_message || errorMessage;
+      } catch (_) {
+        // ignore JSON parsing error
       }
-    };
+      console.error("Détail technique :", errorMessage); // 👈 visible en console
+      throw new Error("Impossible de charger les informations du film.");
+    }
+
+    const data = await response.json();
+    setMovie(data);
+  } catch (err) {
+    console.error('Erreur de chargement (détail dev) :', err); // 👈 log complet
+    setError("Une erreur est survenue lors du chargement du film. Veuillez réessayer.");
+  } finally {
+    setLoading(false);
+  }
+};
+
     fetchMovie();
   }, [id]);
 

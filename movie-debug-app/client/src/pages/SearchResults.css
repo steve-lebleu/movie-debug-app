@@ -1,0 +1,21 @@
+.container-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: row; /* ✅ affichage horizontal */
+  gap: 20px;
+}
+
+
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.container-card {
+  width: 200px;
+  text-align: center;
+}
