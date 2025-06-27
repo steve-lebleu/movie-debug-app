@@ -61,7 +61,7 @@ export default function Home({ searchTerm }: { searchTerm: string }) {
   if (error) return <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>;
 
   return (
-    <Container sx={{ py: 4 }}>
+    <Container sx={{ py: 4}}>
       <Typography variant="h4" component="h1" gutterBottom>
         {searchTerm ? `Résultats pour "${searchTerm}"` : "Films Populaires"}
       </Typography>
