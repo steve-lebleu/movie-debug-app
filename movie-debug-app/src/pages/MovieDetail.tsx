@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import Button from '@mui/material/Button';
 import { CircularProgress, Container, Alert, Box, Typography, Link as MuiLink, CardMedia } from "@mui/material";
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -83,7 +84,7 @@ export default function MovieDetail() {
             Note moyenne : {movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'} ({movie.vote_count} votes)
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            (Placeholder: Bouton Ajouter aux Favoris)
+            <Button variant="contained">Favoris</Button>
           </Typography>
         </Box>
       </Box>
