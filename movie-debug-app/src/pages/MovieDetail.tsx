@@ -1,9 +1,23 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { CircularProgress, Container, Alert, Box, Typography, Link as MuiLink, CardMedia } from "@mui/material";
+import {
+  CircularProgress,
+  Container,
+  Alert,
+  Box,
+  Typography,
+  Link as MuiLink,
+  CardMedia,
+  IconButton,
+  Stack,
+  Button,
+} from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 type Movie = {
   id: number;
@@ -21,6 +35,11 @@ export default function MovieDetail() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const handleToggleFavorite = () => {
+    setIsFavorite((prev) => !prev);
+  };
 
   useEffect(() => {
     if (!id) {
@@ -33,7 +52,7 @@ export default function MovieDetail() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`${URL}/film/${id}?api_key=${API_KEY}`);
+        const response = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}`);
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -66,9 +85,14 @@ export default function MovieDetail() {
           alt={movie.title}
         />
         <Box>
-          <Typography variant="h4" component="h1" gutterBottom>
-            {movie.title}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              {movie.title}
+            </Typography>
+            <IconButton onClick={handleToggleFavorite} color="error">
+              {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </IconButton>
+          </Box>
           <Typography variant="h6" color="text.secondary" gutterBottom>
             {movie.tagline}
           </Typography>
@@ -81,14 +105,14 @@ export default function MovieDetail() {
           <Typography variant="body2" color="text.secondary">
             Note moyenne : {movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'} ({movie.vote_count} votes)
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            (Placeholder: Bouton Ajouter aux Favoris)
-          </Typography>
         </Box>
       </Box>
+
       <Box sx={{ mt: 4 }}>
         <MuiLink component={Link} to="/" color="primary" underline="hover">
-          Retour à l'accueil
+          <Stack spacing={2} direction="row">
+            <Button variant="text">Retour à l'accueil</Button>
+          </Stack>
         </MuiLink>
       </Box>
     </Container>
