@@ -1,17 +1,29 @@
 import { useState } from 'react';
-import { AppBar, Toolbar, Typography, Container, Link as MuiLink, Box, TextField, IconButton } from '@mui/material';
-import { Routes, Route, Link } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Container,
+  Link as MuiLink,
+  Box,
+  TextField,
+  IconButton
+} from '@mui/material';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 
 import Home from './pages/Home';
 import MovieDetail from './pages/MovieDetail';
 import Favorites from './pages/Favorites';
+import SearchResults from './pages/SearchResults'; // 👈 à créer
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   const handleSearch = () => {
-    console.log('Recherche pour:', searchTerm);
+    if (!searchTerm.trim()) return;
+    navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
   };
 
   return (
@@ -34,23 +46,34 @@ function App() {
                 input: { color: 'white' },
                 fieldset: { borderColor: 'rgba(255, 255, 255, 0.7)' },
                 '&:hover fieldset': { borderColor: 'white' },
-                '&.Mui-focused fieldset': { borderColor: 'white' },
+                '&.Mui-focused fieldset': { borderColor: 'white' }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSearch();
               }}
             />
             <IconButton color="inherit" onClick={handleSearch}>
               <SearchIcon />
             </IconButton>
           </Box>
-          <MuiLink component={Link} to="/favorites" color="inherit" underline="hover" sx={{ ml: 2 }}>
+          <MuiLink
+            component={Link}
+            to="/favorites"
+            color="inherit"
+            underline="hover"
+            sx={{ ml: 2 }}
+          >
             Mes Favoris
           </MuiLink>
         </Toolbar>
       </AppBar>
+
       <Container maxWidth="lg">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/movie/:id" element={<MovieDetail />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/search" element={<SearchResults />} /> {/* 👈 route de recherche */}
         </Routes>
       </Container>
     </>

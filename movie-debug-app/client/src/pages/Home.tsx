@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { CircularProgress, Container, Grid, Typography, Alert, Box } from "@mui/material";
 
 import { MovieCard } from "../ui/components/MovieCard";
-
+fetch("http://localhost:3001/api/popular")
+  .then((res) => res.json())
+  .then((data) => setMovies(data.results));
 const BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
