@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
-
-import { CircularProgress, Container, Grid, Typography, Alert, Box } from "@mui/material";
+import {
+  CircularProgress,
+  Container,
+  Grid,
+  Typography,
+  Alert,
+  Box,
+  Pagination,
+} from "@mui/material";
 
 import { MovieCard } from "../ui/components/MovieCard";
 
-const BASE_URL = 'https://api.themoviedb.org/3';
+const BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 type Movie = {
@@ -22,42 +29,64 @@ export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Const pagination
+  const [page, setPage] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1); 
 
   useEffect(() => {
     const fetchPopularMovies = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${BASE_URL}/film/populaires?api_key=${API_KEY}`);
-        
+        const response = await fetch(
+          `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`
+        );
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError("Le service est momentanément indisponible. Merci de revenir ultérieurement.");
+            return;
+          } 
+        }
         const data = await response.json();
-        setMovies(data);
+        setMovies(data.results);
+        setTotalPages(data.total_pages); 
       } catch (err) {
-        setError('Erreur lors du chargement des films: ' + (err as Error).message);
+        setError(
+          "Erreur lors du chargement des films: " + (err as Error).message
+        );
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
     fetchPopularMovies();
-  }, []);
+  }, [page]);
+
+  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
 
   if (loading) return <CircularProgress sx={{ mt: 4 }} />;
   if (error) return <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>;
-  
+
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Films Populaires
-      </Typography>
+      </Typography> 
+
       <Grid container spacing={4}>
         {movies.map((movie) => (
           <MovieCard key={movie.id} movie={movie} />
         ))}
       </Grid>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <Typography variant="body1" color="text.secondary">
-          (Placeholder: Pagination)
-        </Typography>
+
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+        <Pagination
+          count={Math.min(totalPages, 100)}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
       </Box>
     </Container>
   );
