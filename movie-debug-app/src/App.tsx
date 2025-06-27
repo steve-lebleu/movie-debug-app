@@ -20,7 +20,7 @@ function App() {
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <MuiLink component={Link} to="/" color="inherit" underline="none">
-              Movie-Debug
+              Super Movie
             </MuiLink>
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
