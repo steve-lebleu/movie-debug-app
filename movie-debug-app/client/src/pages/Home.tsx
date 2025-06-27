@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-
-import { CircularProgress, Container, Grid, Typography, Alert, Box } from "@mui/material";
+import {
+  CircularProgress,
+  Container,
+  Grid,
+  Typography,
+  Alert,
+  Box,
+  Button
+} from "@mui/material";
 
 import { MovieCard } from "../ui/components/MovieCard";
-fetch("http://localhost:3001/api/popular")
-  .then((res) => res.json())
-  .then((data) => setMovies(data.results));
-const BASE_URL = 'https://api.themoviedb.org/3';
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 type Movie = {
   id: number;
@@ -24,42 +26,78 @@ export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1); // 👈 page actuelle
+  const [totalPages, setTotalPages] = useState(1); // 👈 total de pages (si tu veux le gérer)
 
   useEffect(() => {
     const fetchPopularMovies = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${BASE_URL}/film/populaires?api_key=${API_KEY}`);
-        
+        setError(null);
+
+        const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+        const response = await fetch(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&page=${page}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP ${response.status}`);
+        }
+
         const data = await response.json();
-        setMovies(data);
+        setMovies(data.results || []);
+        setTotalPages(data.total_pages); // utile pour désactiver le bouton "Suivant"
       } catch (err) {
-        setError('Erreur lors du chargement des films: ' + (err as Error).message);
+        setError(
+          "Erreur lors du chargement des films: " + (err as Error).message
+        );
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
+
     fetchPopularMovies();
-  }, []);
+  }, [page]);
 
   if (loading) return <CircularProgress sx={{ mt: 4 }} />;
-  if (error) return <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>;
-  
+  if (error)
+    return (
+      <Alert severity="error" sx={{ mt: 4 }}>
+        {error}
+      </Alert>
+    );
+
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Films Populaires
+        Films Populaires – Page {page}
       </Typography>
       <Grid container spacing={4}>
         {movies.map((movie) => (
           <MovieCard key={movie.id} movie={movie} />
         ))}
       </Grid>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+
+      {/* PAGINATION */}
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 4, gap: 2 }}>
+        <Button
+          variant="outlined"
+          disabled={page === 1}
+          onClick={() => setPage((prev) => prev - 1)}
+        >
+          Précédent
+        </Button>
         <Typography variant="body1" color="text.secondary">
-          (Placeholder: Pagination)
+          Page {page}
         </Typography>
+        <Button
+          variant="outlined"
+          disabled={page === totalPages}
+          onClick={() => setPage((prev) => prev + 1)}
+        >
+          Suivant
+        </Button>
       </Box>
     </Container>
   );
